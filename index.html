@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>從價電子探索化學鍵的奧秘 - 互動學習網頁</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome 圖標 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #0b0f19;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(31, 41, 55, 0.7) 0, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(17, 24, 39, 0.9) 0, transparent 50%);
+        }
+        /* 美化拉桿 */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #1e293b;
+            height: 8px;
+            border-radius: 9999px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #60a5fa;
+        }
+        /* 隱藏預設捲軸 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden pb-8">
+
+    <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid fa-atom text-2xl text-white animate-spin-slow"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">微觀探索：化學鍵魔法實驗室</h1>
+                    <p class="text-xs text-slate-400">授課教師：2026 harvey 教學 • 價電子與八隅體法則互動模擬器</p>
+                </div>
+            </div>
+            <!-- 切換視角按鈕 -->
+            <div class="flex gap-2">
+                <button onclick="switchTab('simulation')" id="btn-tab-sim" class="px-4 py-2 rounded-lg bg-blue-600/90 text-white font-medium text-sm transition shadow-lg shadow-blue-500/20 hover:bg-blue-600">
+                    <i class="fa-solid fa-flask mr-1.5"></i>鍵結模擬器
+                </button>
+                <button onclick="switchTab('knowledge')" id="btn-tab-know" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-medium text-sm transition hover:bg-slate-700">
+                    <i class="fa-solid fa-book mr-1.5"></i>講義與比較表
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
+        
+        <!-- ==================== 標籤頁一：互動模擬器 ==================== -->
+        <div id="tab-simulation" class="grid grid-cols-1 lg:grid-cols-12 gap-6 transition-all duration-300">
+            
+            <!-- 控制面板：佔 5 格 -->
+            <div class="lg:col-span-5 flex flex-col gap-5">
+                
+                <!-- 經典快捷預設按鈕 -->
+                <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 p-5 rounded-2xl shadow-xl">
+                    <h3 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-star text-amber-400"></i> 一鍵載入經典化學鍵組合
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <button onclick="loadPreset('ionic')" class="px-3 py-2 bg-rose-950/40 hover:bg-rose-900/40 text-rose-300 border border-rose-900/50 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                            <span>氯化鈉 NaCl (離子鍵)</span>
+                            <i class="fa-solid fa-circle-arrow-right"></i>
+                        </button>
+                        <button onclick="loadPreset('covalent-polar')" class="px-3 py-2 bg-emerald-950/40 hover:bg-emerald-900/40 text-emerald-300 border border-emerald-900/50 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                            <span>水分 H₂O (極性共價)</span>
+                            <i class="fa-solid fa-circle-arrow-right"></i>
+                        </button>
+                        <button onclick="loadPreset('covalent-nonpolar')" class="px-3 py-2 bg-teal-950/40 hover:bg-teal-900/40 text-teal-300 border border-teal-900/50 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                            <span>氫氣 H₂ (非極性共價)</span>
+                            <i class="fa-solid fa-circle-arrow-right"></i>
+                        </button>
+                        <button onclick="loadPreset('metallic')" class="px-3 py-2 bg-blue-950/40 hover:bg-blue-900/40 text-blue-300 border border-blue-900/50 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                            <span>純銅 Cu (金屬鍵)</span>
+                            <i class="fa-solid fa-circle-arrow-right"></i>
+                        </button>
+                        <button onclick="loadPreset('ionic-mg')" class="px-3 py-2 bg-purple-950/40 hover:bg-purple-900/40 text-purple-300 border border-purple-900/50 rounded-xl text-xs font-semibold transition text-left flex items-center justify-between">
+                            <span>氧化鎂 MgO (強離子鍵)</span>
+                            <i class="fa-solid fa-circle-arrow-right"></i>
+                        </button>
+                        <button onclick="resetSliders()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs font-semibold transition text-center flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-arrow-rotate-left"></i> 重設
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 p-5 rounded-2xl shadow-xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-md font-bold text-emerald-400 flex items-center gap-2">
+                            <span class="inline-block w-3 h-3 bg-emerald-400 rounded-full"></span> 原子 A (左側)
+                        </h3>
+                        <span id="atomA-role" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">金屬</span>
+                    </div>
+                    
+                    <!-- 電負度拉桿 -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs text-slate-400 mb-1.5">
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-magnet text-emerald-500"></i>電負度 (吸引電子力)</span>
+                            <span class="text-emerald-300 font-bold" id="lbl-en-a">0.9</span>
+                        </div>
+                        <input type="range" id="en-a" min="0.7" max="4.0" step="0.1" value="0.9" oninput="updateSimulation()" class="w-full">
+                        <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                            <span>0.7 (低 - 慷慨給予)</span>
+                            <span>4.0 (高 - 強力強奪)</span>
+                        </div>
+                    </div>
+
+                    <!-- 價電子數拉桿 -->
+                    <div>
+                        <div class="flex justify-between text-xs text-slate-400 mb-1.5">
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-ellipsis-h text-emerald-500"></i>最外層價電子數</span>
+                            <span class="text-emerald-300 font-bold" id="lbl-val-a">1</span>
+                        </div>
+                        <input type="range" id="val-a" min="1" max="8" step="1" value="1" oninput="updateSimulation()" class="w-full">
+                        <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                            <span>1 顆 (偏向丟棄)</span>
+                            <span>8 顆 (完美飽和)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 p-5 rounded-2xl shadow-xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-md font-bold text-amber-400 flex items-center gap-2">
+                            <span class="inline-block w-3 h-3 bg-amber-400 rounded-full"></span> 原子 B (右側)
+                        </h3>
+                        <span id="atomB-role" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">非金屬</span>
+                    </div>
+                    
+                    <!-- 電負度拉桿 -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs text-slate-400 mb-1.5">
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-magnet text-amber-500"></i>電負度 (吸引電子力)</span>
+                            <span class="text-amber-300 font-bold" id="lbl-en-b">3.0</span>
+                        </div>
+                        <input type="range" id="en-b" min="0.7" max="4.0" step="0.1" value="3.0" oninput="updateSimulation()" class="w-full">
+                        <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                            <span>0.7 (低 - 慷慨給予)</span>
+                            <span>4.0 (高 - 強力強奪)</span>
+                        </div>
+                    </div>
+
+                    <!-- 價電子數拉桿 -->
+                    <div>
+                        <div class="flex justify-between text-xs text-slate-400 mb-1.5">
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-ellipsis-h text-amber-500"></i>最外層價電子數</span>
+                            <span class="text-amber-300 font-bold" id="lbl-val-b">7</span>
+                        </div>
+                        <input type="range" id="val-b" min="1" max="8" step="1" value="7" oninput="updateSimulation()" class="w-full">
+                        <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                            <span>1 顆 (偏向丟棄)</span>
+                            <span>8 顆 (完美飽和)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 距離調整與功能面板 -->
+                <div class="bg-slate-900/50 backdrop-blur-md border border-slate-800 p-5 rounded-2xl shadow-xl">
+                    <h3 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-left-right text-blue-400"></i> 互動微調
+                    </h3>
+                    
+                    <!-- 原子距離 -->
+                    <div>
+                        <div class="flex justify-between text-xs text-slate-400 mb-1.5">
+                            <span>調整原子距離（拉近即可觀察鍵結形成）</span>
+                            <span class="text-blue-300 font-bold" id="lbl-dist">100% (遠離)</span>
+                        </div>
+                        <input type="range" id="distance" min="0" max="100" step="1" value="100" oninput="updateSimulation()" class="w-full">
+                        <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                            <span>0% (靠近發生反應)</span>
+                            <span>100% (獨立原子)</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="lg:col-span-7 flex flex-col gap-6">
+                
+                <!-- 視覺化畫布 -->
+                <div class="bg-slate-950/80 border border-slate-800 rounded-3xl p-4 flex flex-col relative overflow-hidden min-h-[420px] justify-center items-center shadow-2xl">
+                    <!-- 網格背景 -->
+                    <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30 pointer-events-none"></div>
+                    
+                    <!-- 頂部即時狀態儀表 -->
+                    <div class="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
+                        <div class="flex items-center gap-2 bg-slate-900/80 backdrop-blur border border-slate-800 px-3 py-1.5 rounded-xl">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-ping"></span>
+                            <span class="text-xs text-slate-300 font-mono">ΔEN (電負度差) = <span id="val-den" class="text-indigo-400 font-bold">2.1</span></span>
+                        </div>
+                        <div id="bond-badge" class="px-3 py-1.5 rounded-xl text-xs font-bold shadow-lg shadow-rose-500/10 border border-rose-500/20 bg-rose-950/30 text-rose-300">
+                            獨立原子 (尚未接近)
+                        </div>
+                    </div>
+
+                    <!-- SVG 畫布區域 -->
+                    <svg id="canvas" class="w-full h-[280px]" viewBox="0 0 600 280">
+                        <!-- 所有 SVG 元素將由 JS 動態生成 -->
+                    </svg>
+
+                    <!-- 底部提示文字 -->
+                    <div class="text-center mt-2 text-xs text-slate-400 px-6 z-10">
+                        <p id="helper-text" class="italic text-slate-400">「拉動最下方的【原子距離】拉桿至最左邊，看看這對元素會碰撞出什麼火花！」</p>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-slate-900 to-indigo-950/40 border border-indigo-900/30 p-6 rounded-2xl shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-5">
+                        <i class="fa-solid fa-comment-dots text-8xl text-indigo-400"></i>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-gradient-to-b from-indigo-500 to-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0 shadow-lg shadow-indigo-500/20">
+                            H
+                        </div>
+                        <div>
+                            <h4 class="text-md font-extrabold text-indigo-300 mb-1 flex items-center gap-2">
+                                harvey 老師的微觀解析 
+                                <span class="text-xs font-normal text-slate-400">| 即時化學反應筆記</span>
+                            </h4>
+                            <p id="analysis-text" class="text-sm text-slate-300 leading-relaxed">
+                                請先滑動最下方的「距離」拉桿。當兩個原子被拉近時，我們將根據其電負度的差異和價電子數，決定這場價電子的爭奪戰最終是朝向「轉移（離子）」、「共享（共價）」還是「集體釋放（金屬）」發展喔！
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ==================== 標籤頁二：學術講義與整理 ==================== -->
+        <div id="tab-knowledge" class="hidden max-w-4xl mx-auto bg-slate-900/40 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-2xl transition-all duration-300">
+            <h2 class="text-2xl font-black bg-gradient-to-r from-blue-400 to-indigo-300 bg-clip-text text-transparent mb-6 flex items-center gap-3">
+                <i class="fa-solid fa-graduation-cap text-indigo-400"></i> 課堂講義：三大化學鍵的核心秘密
+            </h2>
+
+            <!-- 三大化學鍵卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- 離子鍵 -->
+                <div class="bg-slate-950/50 border border-rose-950/40 p-5 rounded-2xl">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-extrabold text-rose-400 bg-rose-950/50 px-2 py-1 rounded">強者掠奪</span>
+                        <i class="fa-solid fa-shield-halved text-rose-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">離子鍵 (Ionic)</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                        當<b>金屬</b>遇上<b>非金屬</b>，電負度差值極大。金屬大方給出，非金屬霸道搶奪，電子產生<b>完全轉移</b>，產生正負電靜電引力。
+                    </p>
+                    <span class="text-[11px] font-mono text-rose-300">典型例：NaCl, MgO</span>
+                </div>
+
+                <!-- 共價鍵 -->
+                <div class="bg-slate-950/50 border border-emerald-950/40 p-5 rounded-2xl">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-1 rounded">合夥共創</span>
+                        <i class="fa-solid fa-handshake text-emerald-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">共價鍵 (Covalent)</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                        兩者皆為<b>非金屬</b>，大家電負度都強、互不相讓，最終決定各自拿出一顆或數顆電子，共同放在中間<b>合夥分享</b>。
+                    </p>
+                    <span class="text-[11px] font-mono text-emerald-300">典型例：H₂O, O₂, CO₂</span>
+                </div>
+
+                <!-- 金屬鍵 -->
+                <div class="bg-slate-950/50 border border-blue-950/40 p-5 rounded-2xl">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-extrabold text-blue-400 bg-blue-950/50 px-2 py-1 rounded">自由共用</span>
+                        <i class="fa-solid fa-wind text-blue-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">金屬鍵 (Metallic)</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                        雙方皆為<b>金屬</b>，大家都急著想丟掉最外層微弱的價電子。最終大家集體放手，形成共享的<b>自由電子海</b>。
+                    </p>
+                    <span class="text-[11px] font-mono text-blue-300">典型例：Cu, Fe, Au</span>
+                </div>
+            </div>
+
+            <!-- 比較表格 -->
+            <h3 class="text-md font-bold text-slate-300 mb-3 flex items-center gap-2"><i class="fa-solid fa-table"></i> 三大化學鍵終極比較</h3>
+            <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/40 mb-8">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-900 border-b border-slate-800 text-slate-300">
+                            <th class="p-4">比較項目</th>
+                            <th class="p-4 text-rose-300">離子鍵</th>
+                            <th class="p-4 text-emerald-300">共價鍵</th>
+                            <th class="p-4 text-blue-300">金屬鍵</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800 text-slate-400">
+                        <tr>
+                            <td class="p-4 font-bold text-slate-300">參與元素</td>
+                            <td class="p-4">金屬 + 非金屬</td>
+                            <td class="p-4">非金屬 + 非金屬</td>
+                            <td class="p-4">金屬 + 金屬</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-slate-300">價電子的行為</td>
+                            <td class="p-4"><strong class="text-rose-400">完全轉移</strong> (形成陰、陽離子)</td>
+                            <td class="p-4"><strong class="text-emerald-400">合夥共用</strong> (形成共用電子對)</td>
+                            <td class="p-4"><strong class="text-blue-400">集體去定域化</strong> (形成自由電子海)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-slate-300">主要作用力</td>
+                            <td class="p-4">陰、陽離子間的庫侖靜電引力</td>
+                            <td class="p-4">原子核與共用電子對間的引力</td>
+                            <td class="p-4">金屬陽離子與自由電子海的引力</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-slate-300">生活化比喻</td>
+                            <td class="p-4">💖 <b>聯姻</b> (一方出聘金，一方收下)</td>
+                            <td class="p-4">🤝 <b>合夥創業</b> (雙方出資共享利潤)</td>
+                            <td class="p-4">🌐 <b>共產公社</b> (電子充公自由流通)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 課後問答 -->
+            <div class="bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
+                <h3 class="text-md font-bold text-indigo-400 mb-4 flex items-center gap-2">
+                    <i class="fa-regular fa-lightbulb"></i> 課堂思考：自我檢測
+                </h3>
+                <div class="space-y-4">
+                    <details class="group border-b border-slate-800 pb-3 cursor-pointer">
+                        <summary class="flex justify-between items-center text-sm font-semibold text-slate-300 hover:text-white">
+                            <span>Q1. 為什麼固體食鹽不能導電，但熔融態或食鹽水溶液就可以？</span>
+                            <span class="text-xs text-indigo-400 group-open:rotate-180 transition-transform"><i class="fa-solid fa-chevron-down"></i></span>
+                        </summary>
+                        <p class="text-xs text-slate-400 mt-2 pl-4 border-l-2 border-indigo-500/50 leading-relaxed">
+                            固態食鹽中的陰陽離子被強大的「離子鍵」鎖死在固定晶格點上，<b>電荷無法自由移動</b>，故不導電。一旦加熱熔化或溶於水，離子鍵斷裂，陰陽離子即可自由移動傳遞電荷，因而在液態下能導電。
+                        </p>
+                    </details>
+                    <details class="group border-b border-slate-800 pb-3 cursor-pointer">
+                        <summary class="flex justify-between items-center text-sm font-semibold text-slate-300 hover:text-white">
+                            <span>Q2. 為什麼金屬具有極佳的「延展性」，敲打它卻不會像玻璃一樣粉碎？</span>
+                            <span class="text-xs text-indigo-400 group-open:rotate-180 transition-transform"><i class="fa-solid fa-chevron-down"></i></span>
+                        </summary>
+                        <p class="text-xs text-slate-400 mt-2 pl-4 border-l-2 border-indigo-500/50 leading-relaxed">
+                            金屬內部的「自由電子海」是流動的。當受到強大的外力使金屬陽離子發生位移時，<b>自由電子會立即流過去，重新緊緊貼附著陽離子</b>，提供新的引力，使得晶格不斷裂而僅發生滑移，這就是金屬展延性優秀的理由！
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 頁腳 -->
+    <footer class="text-center text-xs text-slate-600 mt-8">
+        <p>© 2026 harvey 教學 - 高中化學微觀視界. 採用 HTML5 & SVG 技術呈現.</p>
+    </footer>
+
+    <script>
+        // 切換頁面 Tab 邏輯
+        function switchTab(tabId) {
+            const tabSim = document.getElementById('tab-simulation');
+            const tabKnow = document.getElementById('tab-knowledge');
+            const btnSim = document.getElementById('btn-tab-sim');
+            const btnKnow = document.getElementById('btn-tab-know');
+
+            if (tabId === 'simulation') {
+                tabSim.classList.remove('hidden');
+                tabKnow.classList.add('hidden');
+                btnSim.className = 'px-4 py-2 rounded-lg bg-blue-600/90 text-white font-medium text-sm transition shadow-lg shadow-blue-500/20 hover:bg-blue-600';
+                btnKnow.className = 'px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-medium text-sm transition hover:bg-slate-700';
+            } else {
+                tabSim.classList.add('hidden');
+                tabKnow.classList.remove('hidden');
+                btnSim.className = 'px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-medium text-sm transition hover:bg-slate-700';
+                btnKnow.className = 'px-4 py-2 rounded-lg bg-blue-600/90 text-white font-medium text-sm transition shadow-lg shadow-blue-500/20 hover:bg-blue-600';
+            }
+        }
+
+        // 預設配置組
+        const presets = {
+            'ionic': { enA: 0.9, valA: 1, enB: 3.0, valB: 7, symA: 'Na', symB: 'Cl' },
+            'covalent-polar': { enA: 2.1, valA: 1, enB: 3.5, valB: 6, symA: 'H', symB: 'O' },
+            'covalent-nonpolar': { enA: 2.1, valA: 1, enB: 2.1, valB: 1, symA: 'H', symB: 'H' },
+            'metallic': { enA: 1.9, valA: 2, enB: 1.9, valB: 2, symA: 'Cu', symB: 'Cu' },
+            'ionic-mg': { enA: 1.2, valA: 2, enB: 3.5, valB: 6, symA: 'Mg', symB: 'O' }
+        };
+
+        // 目前使用的自訂化學符號
+        let symbolA = 'A';
+        let symbolB = 'B';
+
+        function loadPreset(type) {
+            const config = presets[type];
+            if (!config) return;
+
+            document.getElementById('en-a').value = config.enA;
+            document.getElementById('val-a').value = config.valA;
+            document.getElementById('en-b').value = config.enB;
+            document.getElementById('val-b').value = config.valB;
+            document.getElementById('distance').value = 30; // 自動拉近看化學鍵
+
+            symbolA = config.symA;
+            symbolB = config.symB;
+
+            updateSimulation();
+        }
+
+        function resetSliders() {
+            document.getElementById('en-a').value = 0.9;
+            document.getElementById('val-a').value = 1;
+            document.getElementById('en-b').value = 3.0;
+            document.getElementById('val-b').value = 7;
+            document.getElementById('distance').value = 100;
+            symbolA = 'A';
+            symbolB = 'B';
+            updateSimulation();
+        }
+
+        // 電子海动画专用
+        let metallicAnimFrame;
+        let metallicParticles = [];
+        const maxParticles = 18;
+
+        // 初始化電子海粒子
+        function initMetallicParticles() {
+            metallicParticles = [];
+            for (let i = 0; i < maxParticles; i++) {
+                metallicParticles.push({
+                    x: Math.random() * 600,
+                    y: 40 + Math.random() * 200,
+                    speedX: (1 + Math.random() * 2) * (Math.random() > 0.5 ? 1 : -1),
+                    speedY: (1 + Math.random() * 1.5) * (Math.random() > 0.5 ? 1 : -1)
+                });
+            }
+        }
+        initMetallicParticles();
+
+        function updateSimulation() {
+            // 讀取拉桿數值
+            const enA = parseFloat(document.getElementById('en-a').value);
+            const valA = parseInt(document.getElementById('val-a').value);
+            const enB = parseFloat(document.getElementById('en-b').value);
+            const valB = parseInt(document.getElementById('val-b').value);
+            const dist = parseInt(document.getElementById('distance').value);
+
+            // 更新 UI 上顯示的數字
+            document.getElementById('lbl-en-a').textContent = enA.toFixed(1);
+            document.getElementById('lbl-val-a').textContent = valA;
+            document.getElementById('lbl-en-b').textContent = enB.toFixed(1);
+            document.getElementById('lbl-val-b').textContent = valB;
+            document.getElementById('lbl-dist').textContent = dist === 100 ? "100% (遠離)" : (dist === 0 ? "0% (最緊密)" : `${dist}%`);
+
+            // 運算電負度差與化學元素定位
+            const den = Math.abs(enA - enB).toFixed(1);
+            document.getElementById('val-den').textContent = den;
+
+            // 決定原子角色 (金屬: EN < 2.0; 非金屬: EN >= 2.0)
+            const isMetalA = enA < 2.0;
+            const isMetalB = enB < 2.0;
+            document.getElementById('atomA-role').textContent = isMetalA ? '金屬' : '非金屬';
+            document.getElementById('atomB-role').textContent = isMetalB ? '非金屬' : '非金屬'; // 改回正常對應
+            document.getElementById('atomB-role').className = isMetalB 
+                ? 'px-2 py-0.5 rounded text-[10px] font-bold bg-blue-950/50 text-blue-300 border border-blue-900/30' 
+                : 'px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950/50 text-rose-300 border border-rose-900/30';
+            document.getElementById('atomA-role').className = isMetalA 
+                ? 'px-2 py-0.5 rounded text-[10px] font-bold bg-blue-950/50 text-blue-300 border border-blue-900/30' 
+                : 'px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950/50 text-rose-300 border border-rose-900/30';
+
+            // 判斷化學鍵類型
+            let bondType = "無化學鍵";
+            let explanation = "";
+            let helper = "拉近原子距離，即可觸發鍵結效應！";
+
+            if (dist > 35) {
+                bondType = "獨立原子 (無鍵結)";
+                explanation = `兩原子目前的距離太遠（${dist}%），因此最外層的價電子彼此互不干涉。當你拉近它們的距離時，價電子就會開始產生強烈的交互作用，讓我們拉近看看吧！`;
+                helper = "💡 提示：將「原子距離」拉桿往左拉到 30% 以下，才能使它們接觸並成鍵！";
+                cancelAnimationFrame(metallicAnimFrame);
+                renderStaticAtoms(enA, valA, enB, valB, dist);
+            } else {
+                // 已拉近，判斷化學鍵
+                if (isMetalA && isMetalB) {
+                    // 金屬 + 金屬
+                    bondType = "金屬鍵 (Metallic Bond)";
+                    explanation = `<b>【金屬鍵成立！】</b>雙方都是金屬原子（電負度分別為 ${enA.toFixed(1)} 與 ${enB.toFixed(1)}），彼此對價電子的吸引力都極低，且兩者都很想將少量的價電子拋棄。當它們靠攏時，價電子集體「脫離束縛」，形成可自由穿梭流動的<b>自由電子海 (Sea of Electrons)</b>，緊緊將金屬陽離子（M⁺）黏在一起！這也解釋了金屬優秀的導電與延展性。`;
+                    helper = "💡 微觀動畫中：無數顆小藍點（自由電子）正在金屬陽離子格子間集體自由流動！";
+                    // 啟動電子海動畫
+                    startMetallicAnimation(enA, valA, enB, valB);
+                } else if (!isMetalA && !isMetalB) {
+                    // 非金屬 + 非金屬 (共價鍵)
+                    cancelAnimationFrame(metallicAnimFrame);
+                    if (den < 0.5) {
+                        bondType = "非極性共價鍵 (Nonpolar Covalent)";
+                        explanation = `<b>【非極性共價鍵成立！】</b>雙方的電負度（${enA.toFixed(1)} 與 ${enB.toFixed(1)}）完全相同或差異極小。由於大家都屬於強烈渴望電子的非金屬，且彼此「實力相當」，所以採用最公平的<b>「1:1 合夥共用」</b>方式。電子平分在兩個原子核的中間，沒有明顯偏向哪一方。`;
+                        helper = "💡 微觀圖示：兩原子軌域重疊，共用的價電子在交界處共享。";
+                    } else {
+                        bondType = "極性共價鍵 (Polar Covalent)";
+                        explanation = `<b>【極性共價鍵成立！】</b>雙方均為非金屬，實力都很強，但在電負度上有些微不對等（差值 ${den}）。由於誰都不肯將電子完全放手，所以採取「共用」策略；不過，電負度較高的 <b>原子 ${enA > enB ? symbolA : symbolB}</b> 吸力更大，將這對共用電子對稍微<b>拉偏向自己那一方</b>。`;
+                        helper = `💡 微觀圖示：電子對雖然被雙方共享，但明顯偏向吸引力較強的原子那一端！`;
+                    }
+                    renderCovalentAtoms(enA, valA, enB, valB, dist, den);
+                } else {
+                    // 金屬 + 非金屬 (離子鍵)
+                    cancelAnimationFrame(metallicAnimFrame);
+                    const giver = isMetalA ? symbolA : symbolB;
+                    const taker = isMetalA ? symbolB : symbolA;
+                    bondType = "離子鍵 (Ionic Bond)";
+                    explanation = `<b>【離子鍵成立！】</b>這是一場不對等的搶奪戰！一方是電負度極低的金屬，另一方則是渴望電子的非金屬，電負度差高達 ${den}。當兩者靠近時，金屬原子（${giver}）會直接將其價電子<b>「完全轉移」</b>給非金屬（${taker}）。失去電子的金屬變成正離子（陽離子），得到電子的非金屬變為負離子（陰離子），兩者憑藉強大的<b>庫侖靜電引力</b>結合。`;
+                    helper = `💡 微觀圖示：價電子完全滑向非金屬一側，產生帶正電（+）與帶負電（-）的離子吸引結構。`;
+                    renderIonicAtoms(enA, valA, enB, valB, dist, isMetalA);
+                }
+            }
+
+            // 更新文字面板
+            document.getElementById('analysis-text').innerHTML = explanation;
+            document.getElementById('helper-text').innerHTML = helper;
+            
+            // 更新 Badge 顏色
+            const badge = document.getElementById('bond-badge');
+            badge.textContent = bondType;
+            if (bondType.includes("獨立")) {
+                badge.className = "px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900/80 text-slate-400";
+            } else if (bondType.includes("離子")) {
+                badge.className = "px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-500/30 bg-rose-950/40 text-rose-400 shadow-lg shadow-rose-950/40 animate-pulse";
+            } else if (bondType.includes("共價")) {
+                badge.className = "px-3 py-1.5 rounded-xl text-xs font-bold border border-emerald-500/30 bg-emerald-950/40 text-emerald-400 shadow-lg shadow-emerald-950/40 animate-pulse";
+            } else if (bondType.includes("金屬")) {
+                badge.className = "px-3 py-1.5 rounded-xl text-xs font-bold border border-blue-500/30 bg-blue-950/40 text-blue-400 shadow-lg shadow-blue-950/40 animate-pulse";
+            }
+        }
+
+        function renderStaticAtoms(enA, valA, enB, valB, dist) {
+            const svg = document.getElementById('canvas');
+            svg.innerHTML = '';
+
+            // 計算原子中心點
+            // 距離在 35 - 100 之間映射 X 軸位置
+            const minX = 210, maxX = 130;
+            const offset = (dist - 35) / 65; // 0 至 1
+            const xA = 150 + offset * (120 - 150); // 左原子 X (120-150)
+            const xB = 450 + offset * (480 - 450); // 右原子 X (450-480)
+            const y = 140;
+
+            // 繪製原子外殼 (Orbit Rings)
+            const ringColorA = enA < 2.0 ? '#60a5fa' : '#f87171';
+            const ringColorB = enB < 2.0 ? '#60a5fa' : '#f87171';
+
+            // 原子 A SVG
+            createSvgAtom(svg, xA, y, 70, ringColorA, symbolA, valA, enA, "A");
+            // 原子 B SVG
+            createSvgAtom(svg, xB, y, 70, ringColorB, symbolB, valB, enB, "B");
+        }
+
+        function createSvgAtom(svg, cx, cy, r, color, name, valElectrons, en, label) {
+            // 最外層電子軌域
+            const orbit = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            orbit.setAttribute("cx", cx);
+            orbit.setAttribute("cy", cy);
+            orbit.setAttribute("r", r);
+            orbit.setAttribute("fill", "none");
+            orbit.setAttribute("stroke", color);
+            orbit.setAttribute("stroke-width", "1.5");
+            orbit.setAttribute("stroke-dasharray", "4, 3");
+            orbit.setAttribute("opacity", "0.6");
+            svg.appendChild(orbit);
+
+            // 內層發光雲
+            const glow = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            glow.setAttribute("cx", cx);
+            glow.setAttribute("cy", cy);
+            glow.setAttribute("r", r * 0.7);
+            glow.setAttribute("fill", color);
+            glow.setAttribute("opacity", "0.04");
+            svg.appendChild(glow);
+
+            // 原子核心
+            const core = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            core.setAttribute("cx", cx);
+            core.setAttribute("cy", cy);
+            core.setAttribute("r", "28");
+            core.setAttribute("fill", "#1e293b");
+            core.setAttribute("stroke", color);
+            core.setAttribute("stroke-width", "2");
+            svg.appendChild(core);
+
+            // 核心文字 (符號名稱)
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", cx);
+            text.setAttribute("y", cy + 5);
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("fill", "#ffffff");
+            text.setAttribute("font-size", "14");
+            text.setAttribute("font-weight", "bold");
+            text.textContent = name;
+            svg.appendChild(text);
+
+            // 電負度小字
+            const textEN = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            textEN.setAttribute("x", cx);
+            textEN.setAttribute("y", cy + 20);
+            textEN.setAttribute("text-anchor", "middle");
+            textEN.setAttribute("fill", "#94a3b8");
+            textEN.setAttribute("font-size", "8");
+            textEN.textContent = `EN: ${en.toFixed(1)}`;
+            svg.appendChild(textEN);
+
+            // 佈置最外層電子
+            for (let i = 0; i < valElectrons; i++) {
+                const angle = (i * 2 * Math.PI) / valElectrons;
+                const ex = cx + r * Math.cos(angle);
+                const ey = cy + r * Math.sin(angle);
+
+                const electron = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                electron.setAttribute("cx", ex);
+                electron.setAttribute("cy", ey);
+                electron.setAttribute("r", "5.5");
+                electron.setAttribute("fill", color);
+                electron.setAttribute("stroke", "#0b0f19");
+                electron.setAttribute("stroke-width", "1.5");
+                electron.setAttribute("filter", "drop-shadow(0px 0px 4px " + color + ")");
+                svg.appendChild(electron);
+            }
+        }
+
+        function renderIonicAtoms(enA, valA, enB, valB, dist, isMetalA) {
+            const svg = document.getElementById('canvas');
+            svg.innerHTML = '';
+
+            const y = 140;
+            // 靠近成鍵時固定 X 軸
+            const xA = 210;
+            const xB = 390;
+
+            // 判定誰是金屬、誰是非金屬 (金屬轉移電子，非金屬吸收電子)
+            const giverX = isMetalA ? xA : xB;
+            const takerX = isMetalA ? xB : xA;
+            const giverSymbol = isMetalA ? symbolA : symbolB;
+            const takerSymbol = isMetalA ? symbolB : symbolA;
+            const giverEn = isMetalA ? enA : enB;
+            const takerEn = isMetalA ? enB : enA;
+            const giverVal = isMetalA ? valA : valB;
+            const takerVal = isMetalA ? valB : valA;
+
+            // 繪製庫侖力靜電引力波漣漪
+            const pullGlow = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+            pullGlow.setAttribute("cx", 300);
+            pullGlow.setAttribute("cy", y);
+            pullGlow.setAttribute("rx", 100);
+            pullGlow.setAttribute("ry", 30);
+            pullGlow.setAttribute("fill", "none");
+            pullGlow.setAttribute("stroke", "#f43f5e");
+            pullGlow.setAttribute("stroke-width", "2");
+            pullGlow.setAttribute("stroke-dasharray", "6, 6");
+            pullGlow.setAttribute("opacity", "0.5");
+            svg.appendChild(pullGlow);
+
+            // 引力核心閃電或連線
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", xA + 30);
+            line.setAttribute("y1", y);
+            line.setAttribute("x2", xB - 30);
+            line.setAttribute("y2", y);
+            line.setAttribute("stroke", "#f43f5e");
+            line.setAttribute("stroke-width", "4");
+            line.setAttribute("stroke-dasharray", "2, 4");
+            svg.appendChild(line);
+
+            // 金屬陽離子 (Giver) - 最外層被拔光，通常會縮小
+            createSvgIon(svg, giverX, y, 55, "#3b82f6", `${giverSymbol}⁺`, `EN: ${giverEn.toFixed(1)}`, true, giverVal);
+
+            // 非金屬陰離子 (Taker) - 得到電子塞滿八隅體，呈現完美飽和
+            createSvgIon(svg, takerX, y, 75, "#ef4444", `${takerSymbol}⁻`, `EN: ${takerEn.toFixed(1)}`, false, takerVal, giverVal);
+        }
+
+        // 輔助繪製離子
+        function createSvgIon(svg, cx, cy, r, color, name, enStr, isCation, originalVal, extraVal = 0) {
+            const orbit = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            orbit.setAttribute("cx", cx);
+            orbit.setAttribute("cy", cy);
+            orbit.setAttribute("r", r);
+            orbit.setAttribute("fill", "none");
+            orbit.setAttribute("stroke", color);
+            orbit.setAttribute("stroke-width", "2");
+            orbit.setAttribute("stroke-dasharray", isCation ? "none" : "5, 5");
+            orbit.setAttribute("opacity", "0.7");
+            svg.appendChild(orbit);
+
+            const core = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            core.setAttribute("cx", cx);
+            core.setAttribute("cy", cy);
+            core.setAttribute("r", "28");
+            core.setAttribute("fill", "#0f172a");
+            core.setAttribute("stroke", color);
+            core.setAttribute("stroke-width", "3");
+            svg.appendChild(core);
+
+            // 核心文字
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", cx);
+            text.setAttribute("y", cy + 5);
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("fill", "#ffffff");
+            text.setAttribute("font-size", "14");
+            text.setAttribute("font-weight", "extrabold");
+            text.textContent = name;
+            svg.appendChild(text);
+
+            const textEN = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            textEN.setAttribute("x", cx);
+            textEN.setAttribute("y", cy + 18);
+            textEN.setAttribute("text-anchor", "middle");
+            textEN.setAttribute("fill", "#64748b");
+            textEN.setAttribute("font-size", "8");
+            textEN.textContent = enStr;
+            svg.appendChild(textEN);
+
+            if (isCation) {
+                // 陽離子：價電子已完全轉移（故畫面上外殼無電子）
+                const tipText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                tipText.setAttribute("x", cx);
+                tipText.setAttribute("y", cy - 40);
+                tipText.setAttribute("text-anchor", "middle");
+                tipText.setAttribute("fill", "#60a5fa");
+                tipText.setAttribute("font-size", "9");
+                tipText.setAttribute("font-weight", "bold");
+                tipText.textContent = `釋出 ${originalVal} 顆電子`;
+                svg.appendChild(tipText);
+            } else {
+                // 陰離子：塞滿電子（自己的電子 + 搶來的電子）
+                // 模擬最終拼成 8 隅體 (或最多 8 顆)
+                const totalElectrons = Math.min(8, originalVal + extraVal);
+                for (let i = 0; i < totalElectrons; i++) {
+                    const angle = (i * 2 * Math.PI) / totalElectrons;
+                    const ex = cx + r * Math.cos(angle);
+                    const ey = cy + r * Math.sin(angle);
+
+                    // 屬於搶來的電子用亮黃色表示
+                    const isStolen = i >= originalVal;
+
+                    const electron = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    electron.setAttribute("cx", ex);
+                    electron.setAttribute("cy", ey);
+                    electron.setAttribute("r", "5.5");
+                    electron.setAttribute("fill", isStolen ? "#f59e0b" : color);
+                    electron.setAttribute("stroke", "#0b0f19");
+                    electron.setAttribute("stroke-width", "1.5");
+                    electron.setAttribute("filter", `drop-shadow(0px 0px 4px ${isStolen ? '#f59e0b' : color})`);
+                    svg.appendChild(electron);
+                }
+
+                const tipText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                tipText.setAttribute("x", cx);
+                tipText.setAttribute("y", cy - 40);
+                tipText.setAttribute("text-anchor", "middle");
+                tipText.setAttribute("fill", "#f59e0b");
+                tipText.setAttribute("font-size", "9");
+                tipText.setAttribute("font-weight", "bold");
+                tipText.textContent = `奪得 ${extraVal} 顆電子 (黃)`;
+                svg.appendChild(tipText);
+            }
+        }
+
+        function renderCovalentAtoms(enA, valA, enB, valB, dist, den) {
+            const svg = document.getElementById('canvas');
+            svg.innerHTML = '';
+
+            const y = 140;
+            // 緊密靠在一起，使軌域發生重疊
+            const xA = 240;
+            const xB = 360;
+            const r = 70;
+
+            // 繪製軌域交接重疊區 (Venn Diagram)
+            // 左原子外殼
+            const orbitA = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            orbitA.setAttribute("cx", xA);
+            orbitA.setAttribute("cy", y);
+            orbitA.setAttribute("r", r);
+            orbitA.setAttribute("fill", "rgba(16, 185, 129, 0.02)");
+            orbitA.setAttribute("stroke", "#10b981");
+            orbitA.setAttribute("stroke-width", "1.5");
+            svg.appendChild(orbitA);
+
+            // 右原子外殼
+            const orbitB = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            orbitB.setAttribute("cx", xB);
+            orbitB.setAttribute("cy", y);
+            orbitB.setAttribute("r", r);
+            orbitB.setAttribute("fill", "rgba(16, 185, 129, 0.02)");
+            orbitB.setAttribute("stroke", "#10b981");
+            orbitB.setAttribute("stroke-width", "1.5");
+            svg.appendChild(orbitB);
+
+            // 繪製兩個原子核
+            drawCovalentCore(svg, xA, y, symbolA, enA);
+            drawCovalentCore(svg, xB, y, symbolB, enB);
+
+            // 決定共用電子的中心 X 座標。如果電負度相同，完全置中 (300)；若有差異，偏向 EN 高的
+            let sharedX = 300;
+            if (enA !== enB) {
+                const ratio = (enA - enB) / 3.3; // 縮小權重
+                sharedX = 300 - (ratio * 25);   // 微幅朝電負度高者位移
+            }
+
+            // 繪製合夥共用電子對（必定以「偶數」成對出現）
+            // 假設每邊各自拿出 min(剩餘能湊滿8的電子數, 目前擁有的電子) 形成共享，我們在模擬上渲染一對 (2 顆) 電子
+            const sharedElectrons = [
+                { x: sharedX, y: y - 18 },
+                { x: sharedX, y: y + 18 }
+            ];
+
+            sharedElectrons.forEach(pt => {
+                const e = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                e.setAttribute("cx", pt.x);
+                e.setAttribute("cy", pt.y);
+                e.setAttribute("r", "6");
+                e.setAttribute("fill", "#10b981");
+                e.setAttribute("stroke", "#0b0f19");
+                e.setAttribute("stroke-width", "1.5");
+                e.setAttribute("filter", "drop-shadow(0px 0px 6px #10b981)");
+                svg.appendChild(e);
+            });
+
+            // 其餘「非共用（孤對）電子」均勻分配在外側
+            drawOuterUnsharedElectrons(svg, xA, y, r, valA - 1, true, sharedX);
+            drawOuterUnsharedElectrons(svg, xB, y, r, valB - 1, false, sharedX);
+
+            // 中間拉偏提示
+            if (Math.abs(enA - enB) >= 0.5) {
+                const arrow = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                arrow.setAttribute("x", 300);
+                arrow.setAttribute("y", y - 45);
+                arrow.setAttribute("text-anchor", "middle");
+                arrow.setAttribute("fill", "#34d399");
+                arrow.setAttribute("font-size", "10");
+                arrow.setAttribute("font-weight", "bold");
+                arrow.textContent = `電子對偏向 ${enA > enB ? symbolA : symbolB} 側 ➔`;
+                svg.appendChild(arrow);
+            }
+        }
+
+        function drawCovalentCore(svg, cx, cy, name, en) {
+            const core = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            core.setAttribute("cx", cx);
+            core.setAttribute("cy", cy);
+            core.setAttribute("r", "26");
+            core.setAttribute("fill", "#1e293b");
+            core.setAttribute("stroke", "#10b981");
+            core.setAttribute("stroke-width", "2");
+            svg.appendChild(core);
+
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", cx);
+            text.setAttribute("y", cy + 5);
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("fill", "#ffffff");
+            text.setAttribute("font-size", "14");
+            text.setAttribute("font-weight", "bold");
+            text.textContent = name;
+            svg.appendChild(text);
+
+            const textEN = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            textEN.setAttribute("x", cx);
+            textEN.setAttribute("y", cy + 18);
+            textEN.setAttribute("text-anchor", "middle");
+            textEN.setAttribute("fill", "#64748b");
+            textEN.setAttribute("font-size", "8");
+            textEN.textContent = `EN: ${en.toFixed(1)}`;
+            svg.appendChild(textEN);
+        }
+
+        // 繪製剩餘不共用的電子（避開重疊共享區）
+        function drawOuterUnsharedElectrons(svg, cx, cy, r, count, isLeft, sharedX) {
+            if (count <= 0) return;
+            // 設定角度範圍，左原子分布在左側 (110度 ~ 250度)，右原子分布在右側 (-70度 ~ 70度)
+            const startAngle = isLeft ? Math.PI * 0.7 : -Math.PI * 0.3;
+            const angleSpan = isLeft ? Math.PI * 0.6 : Math.PI * 0.6;
+
+            for (let i = 0; i < count; i++) {
+                const angle = startAngle + (count > 1 ? (i * angleSpan / (count - 1)) : angleSpan / 2);
+                const ex = cx + r * Math.cos(angle);
+                const ey = cy + r * Math.sin(angle);
+
+                const electron = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                electron.setAttribute("cx", ex);
+                electron.setAttribute("cy", ey);
+                electron.setAttribute("r", "5.5");
+                electron.setAttribute("fill", "#34d399");
+                electron.setAttribute("stroke", "#0b0f19");
+                electron.setAttribute("stroke-width", "1.5");
+                svg.appendChild(electron);
+            }
+        }
+
+        function startMetallicAnimation(enA, valA, enB, valB) {
+            cancelAnimationFrame(metallicAnimFrame);
+            
+            function loop() {
+                renderMetallicGrid(enA, valA, enB, valB);
+                metallicAnimFrame = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        function renderMetallicGrid(enA, valA, enB, valB) {
+            const svg = document.getElementById('canvas');
+            svg.innerHTML = '';
+
+            // 繪製 3x2 金屬陽離子點陣 (代表金屬晶格體)
+            const rows = 2;
+            const cols = 4;
+            const startX = 120;
+            const startY = 90;
+            const spacingX = 120;
+            const spacingY = 100;
+
+            // 繪製背景電子海流光特效 (藍光微暈)
+            const bgGlow = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            bgGlow.setAttribute("width", "600");
+            bgGlow.setAttribute("height", "280");
+            bgGlow.setAttribute("fill", "rgba(59, 130, 246, 0.03)");
+            svg.appendChild(bgGlow);
+
+            // 更新並繪製自由電子 (小藍粒子)
+            metallicParticles.forEach(p => {
+                // 移動粒子
+                p.x += p.speedX;
+                p.y += p.speedY;
+
+                // 邊界碰撞檢測
+                if (p.x < 10 || p.x > 590) p.speedX *= -1;
+                if (p.y < 30 || p.y > 250) p.speedY *= -1;
+
+                const eCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                eCircle.setAttribute("cx", p.x);
+                eCircle.setAttribute("cy", p.y);
+                eCircle.setAttribute("r", "4.5");
+                eCircle.setAttribute("fill", "#60a5fa");
+                eCircle.setAttribute("filter", "drop-shadow(0px 0px 5px #3b82f6)");
+                svg.appendChild(eCircle);
+            });
+
+            // 繪製金屬陽離子格子
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cx = startX + c * spacingX;
+                    const cy = startY + r * spacingY;
+
+                    // 繪製帶正電的金屬核
+                    const ion = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    ion.setAttribute("cx", cx);
+                    ion.setAttribute("cy", cy);
+                    ion.setAttribute("r", "22");
+                    ion.setAttribute("fill", "#0f172a");
+                    ion.setAttribute("stroke", "#3b82f6");
+                    ion.setAttribute("stroke-width", "2.5");
+                    svg.appendChild(ion);
+
+                    // 標記 M+ (金屬陽離子)
+                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text.setAttribute("x", cx);
+                    text.setAttribute("y", cy + 5);
+                    text.setAttribute("text-anchor", "middle");
+                    text.setAttribute("fill", "#60a5fa");
+                    text.setAttribute("font-size", "12");
+                    text.setAttribute("font-weight", "extrabold");
+                    text.textContent = `${c % 2 === 0 ? symbolA : symbolB}⁺`;
+                    svg.appendChild(text);
+
+                    // 繪製微弱外層軌域殘影
+                    const orbit = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    orbit.setAttribute("cx", cx);
+                    orbit.setAttribute("cy", cy);
+                    orbit.setAttribute("r", "38");
+                    orbit.setAttribute("fill", "none");
+                    orbit.setAttribute("stroke", "rgba(59, 130, 246, 0.15)");
+                    orbit.setAttribute("stroke-width", "1");
+                    orbit.setAttribute("stroke-dasharray", "3, 3");
+                    svg.appendChild(orbit);
+                }
+            }
+
+            // 加一個「流動電子海」標籤
+            const labelText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            labelText.setAttribute("x", "300");
+            labelText.setAttribute("y", "255");
+            labelText.setAttribute("text-anchor", "middle");
+            labelText.setAttribute("fill", "#60a5fa");
+            labelText.setAttribute("font-size", "11");
+            labelText.setAttribute("font-weight", "600");
+            labelText.textContent = `✦ 自由電子海 (Delocalized Electron Sea) 正在自由流動 ✦`;
+            svg.appendChild(labelText);
+        }
+
+        // 頁面初次載入執行
+        window.onload = function() {
+            updateSimulation();
+        }
+    </script>
+</body>
+</html>
